@@ -13,18 +13,26 @@ def generate_lineal_collection(class_qty):
     data = {"x": [], "y": [], "class_type": []}
 
     for i in range(class_qty):
-        x = random.uniform(0.0, 0.5)
-        y = random.uniform(0.5, 1.0)
+        x = random.uniform(0.0, 1.0)
+        y = random.uniform(0.0, 1.0)
         data["x"].append(x)
         data["y"].append(y)
-        data["class_type"].append(1)
+        class_type = 1 if y >= x else -1
+        data["class_type"].append(class_type)
 
-    for i in range(class_qty):
-        x = random.uniform(0.5, 1.0)
-        y = random.uniform(0.0, 0.5)
-        data["x"].append(x)
-        data["y"].append(y)
-        data["class_type"].append(-1)
+    # for i in range(class_qty):
+    #     x = random.uniform(0.0, 0.5)
+    #     y = random.uniform(0.5, 1.0)
+    #     data["x"].append(x)
+    #     data["y"].append(y)
+    #     data["class_type"].append(1)
+    #
+    # for i in range(class_qty):
+    #     x = random.uniform(0.5, 1.0)
+    #     y = random.uniform(0.0, 0.5)
+    #     data["x"].append(x)
+    #     data["y"].append(y)
+    #     data["class_type"].append(-1)
 
     return pd.DataFrame(data)
 
@@ -35,12 +43,12 @@ def scatterplot_df(other_df):
     return ax
 
 
-train_data = generate_lineal_collection(20)
+train_data = generate_lineal_collection(100)
 p = Perceptron()
-p.train(train_data, 0.1, 1)
+p.train(train_data, 0.1, 100)
 p.print_perceptron()
 
-test_data = generate_lineal_collection(10)
+test_data = generate_lineal_collection(25)
 p.predict(test_data)
 
 x = np.linspace(0, 1, 10)

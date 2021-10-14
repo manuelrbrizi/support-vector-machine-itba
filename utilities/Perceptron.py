@@ -28,7 +28,7 @@ class Perceptron:
                 self.min_weight = self.weight
 
     def print_perceptron(self):
-        print("W[0] = ", self.min_weight[0], ", W[1] = ", self.min_weight[1], ", Error: ", self.min_error)
+        print("W[0] = ", self.min_weight[0], ", W[1] = ", self.min_weight[1], ", W[3] = ", self.weight[2], ", Error: ", self.min_error)
 
     def predict(self, collection):
         for i in range(len(collection)):
