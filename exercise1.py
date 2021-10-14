@@ -1,8 +1,8 @@
+import itertools
 import random
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as mp
 import seaborn as sns
 from matplotlib import pyplot as plt
 
@@ -43,7 +43,7 @@ p.print_perceptron()
 test_data = generate_lineal_collection(10)
 p.predict(test_data)
 
-x = np.linspace(0, 1, 100)
+x = np.linspace(0, 1, 10)
 y = -p.weight[0]/p.weight[1]*x - p.weight[2]/p.weight[1]
 
 # now sort it just to make it look like it's related
@@ -51,7 +51,11 @@ x.sort()
 y.sort()
 
 fig, ax = plt.subplots()
-ax.scatter(test_data["x"], test_data["y"], zorder=10)
+colors = itertools.cycle(["r", "b", "g"])
+class_one_df = test_data[test_data["class_type"] == 1]
+class_two_df = test_data[test_data["class_type"] == -1]
+ax.scatter(class_one_df["x"], class_one_df["y"], zorder=10, color=next(colors))
+ax.scatter(class_two_df["x"], class_two_df["y"], zorder=10, color=next(colors))
 ax.plot(x, y, 'k-', alpha=0.75, zorder=0)
 plt.show()
 
