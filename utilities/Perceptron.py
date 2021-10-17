@@ -34,4 +34,4 @@ class Perceptron:
         for i in range(len(collection)):
             excitation = self.min_weight[0] * collection.iloc[i].x + self.min_weight[1] * collection.iloc[i].y
             activation = 1 if excitation > 0 else -1
-            print("Expected = ", collection.iloc[i].class_type, ", Predicted = ", activation)
+            #print("Expected = ", collection.iloc[i].class_type, ", Predicted = ", activation)
