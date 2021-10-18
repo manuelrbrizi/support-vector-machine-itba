@@ -32,9 +32,9 @@ def get_support_points(A, B, data):
         elem = data.iloc[i]
         distance = abs(A * elem["x"] + B - elem["y"])
         if elem["class_type"] == 1:
-            class_one_list.append(Node(elem["x"], elem["y"], elem["class_type"], distance))
+            class_one_list.append(Node(elem["x"], elem["y"], elem["class_type"], distance, i))
         else:
-            class_two_list.append(Node(elem["x"], elem["y"], elem["class_type"], distance))
+            class_two_list.append(Node(elem["x"], elem["y"], elem["class_type"], distance, i))
 
     class_one_list.sort(key=lambda n: n.distance)
     class_two_list.sort(key=lambda n: n.distance)
@@ -45,7 +45,6 @@ def plot_separation_function_and_data(a, b, test_df):
     # Graficamos el hiperplano de separacion
     x = np.linspace(0, 1, 10)
     y = a * x + b
-    norma = math.sqrt(math.pow(-p.weight[0] / p.weight[1], 2) + math.pow(-p.weight[2] / p.weight[1], 2))
 
     # Ordenamos los puntos y los graficamos en la recta
     x.sort()
@@ -69,7 +68,7 @@ def plot_separation_and_compare(a, b, a1, b1, test_df):
     # Ordenamos los puntos y los graficamos en la recta
     x.sort()
     y.sort()
-    colors = itertools.cycle(["r", "b", "g"])
+    colors = itertools.cycle(["r", "b", "y", "g", "m"])
     class_one_df = test_df[test_df["class_type"] == 1]
     class_two_df = test_df[test_df["class_type"] == -1]
     plt.scatter(class_one_df["x"], class_one_df["y"], zorder=10, color=next(colors))
@@ -134,17 +133,30 @@ def get_df_from_points(s1, s2, s3):
     return pd.DataFrame(data)
 
 
+def generate_bad_collection(size):
+    data = generate_lineal_collection(size)
+    one_list, two_list = get_support_points(1, 0, data)
+
+    for i in [one_list[0].idx, one_list[1].idx, two_list[0].idx, two_list[1].idx]:
+        elem = data.iloc[i]
+        data.loc[i, "class_type"] = -1 if elem["class_type"] == 1 else 1
+
+    return data
+
+
+#   COMIENZO EJERCICIO 1
+
 # Hacemos el conjunto de entrenamiento, creamos y entrenamos el perceptron
-train_data = generate_lineal_collection(100)
+train_data = generate_lineal_collection(150)
 p = Perceptron()
-p.train(train_data, 0.1, 100)
+p.train(train_data, 0.1, 500)
 
 # Creamos el conjunto de testeo y hacemos las predicciones
 test_data = generate_lineal_collection(25)
 p.predict(test_data)
 
 # Ploteamos el resultado inicial de entrenar el perceptron
-# plot_separation_function_and_data(-p.weight[0] / p.weight[1], -p.weight[2] / p.weight[1], test_data)
+plot_separation_function_and_data(-p.weight[0] / p.weight[1], -p.weight[2] / p.weight[1], test_data)
 
 # Obtenemos los puntos de soporte
 norma = math.sqrt(math.pow(-p.weight[0] / p.weight[1], 2) + math.pow(-p.weight[2] / p.weight[1], 2))
@@ -181,3 +193,12 @@ print(d1, d2)
 
 # Graficamos la del perceptron y la optima
 plot_separation_and_compare(-p.weight[0] / p.weight[1], -p.weight[2] / p.weight[1], current_a, current_b, test_data)
+
+#   COMIENZO EJERCICIO 2
+
+train_data = generate_bad_collection(150)
+p = Perceptron()
+p.train(train_data, 0.1, 500)
+
+test_data = generate_bad_collection(25)
+plot_separation_function_and_data(-p.weight[0] / p.weight[1], -p.weight[2] / p.weight[1], test_data)
