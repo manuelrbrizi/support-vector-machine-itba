@@ -143,6 +143,35 @@ def generate_bad_collection(size):
 
     return data
 
+def cortar():
+    return False
+
+
+def SVM(cota, df, b, w):
+    i = 1
+    kw = 0.01
+    kb = 0.01
+    # w = 0
+    # b = 0
+    c = 1
+    wf = w
+    bf = b
+    while i < cota and not cortar():
+        kw = 0.99*kw
+        kb = 0.99*kb
+        row = df.iloc[i % len(df["x"])]
+        t = row["y"]*(w * row["x"] + b)
+        if t < 1:
+            sum1, sum2 = 0, 0
+            for index, rowTemp in df.iterrows():
+                sum1 += rowTemp["x"] * rowTemp["y"] * -1
+                sum2 += rowTemp["y"] * -1
+            wf = wf - kw*(w + c * sum1)
+            bf = bf - kb*(c * sum2)
+        else:
+            wf = wf - w*kw
+        i += 1
+    return wf, bf
 
 #   COMIENZO EJERCICIO 1
 
@@ -202,3 +231,6 @@ p.train(train_data, 0.1, 500)
 
 test_data = generate_bad_collection(25)
 plot_separation_function_and_data(-p.weight[0] / p.weight[1], -p.weight[2] / p.weight[1], test_data)
+
+wf, bf = SVM(1000, test_data, current_b, current_a)
+print("wf, bf = ", wf, bf)
