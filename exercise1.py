@@ -73,12 +73,12 @@ def plot_separation_and_compare(a, b, a1, b1, test_df):
     class_two_df = test_df[test_df["class_type"] == -1]
     plt.scatter(class_one_df["x"], class_one_df["y"], zorder=10, color=next(colors))
     plt.scatter(class_two_df["x"], class_two_df["y"], zorder=10, color=next(colors))
-    if current_type == 1:
-        plt.scatter([class_one[0].x, class_one[1].x, class_two[0].x], [class_one[0].y, class_one[1].y, class_two[0].y],
-                    zorder=10, color=next(colors))
-    else:
-        plt.scatter([class_two[0].x, class_two[1].x, class_one[0].x], [class_two[0].y, class_two[1].y, class_one[0].y],
-                    zorder=10, color=next(colors))
+    # if current_type == 1:
+    #     plt.scatter([class_one[0].x, class_one[1].x, class_two[0].x], [class_one[0].y, class_one[1].y, class_two[0].y],
+    #                 zorder=10, color=next(colors))
+    # else:
+    #     plt.scatter([class_two[0].x, class_two[1].x, class_one[0].x], [class_two[0].y, class_two[1].y, class_one[0].y],
+    #                 zorder=10, color=next(colors))
 
     plt.plot(x, y, 'k-', alpha=0.75, zorder=0)
     plt.plot(x, y1, '--', alpha=0.75, zorder=0, color=next(colors))
@@ -173,10 +173,11 @@ def SVM(cota, df, b, w):
         i += 1
     return wf, bf
 
+
 #   COMIENZO EJERCICIO 1
 
 # Hacemos el conjunto de entrenamiento, creamos y entrenamos el perceptron
-train_data = generate_lineal_collection(150)
+train_data = generate_lineal_collection(100)
 p = Perceptron()
 p.train(train_data, 0.1, 500)
 
@@ -189,7 +190,7 @@ plot_separation_function_and_data(-p.weight[0] / p.weight[1], -p.weight[2] / p.w
 
 # Obtenemos los puntos de soporte
 norma = math.sqrt(math.pow(-p.weight[0] / p.weight[1], 2) + math.pow(-p.weight[2] / p.weight[1], 2))
-class_one, class_two = get_support_points(-p.weight[0]/p.weight[1]/norma, -p.weight[2]/p.weight[1]/norma, test_data)
+class_one, class_two = get_support_points(-p.weight[0]/p.weight[1]/norma, -p.weight[2]/p.weight[1]/norma, train_data)
 
 # Buscamos el optimo usando 3 puntos de soporte
 current_a = 0
@@ -225,12 +226,12 @@ plot_separation_and_compare(-p.weight[0] / p.weight[1], -p.weight[2] / p.weight[
 
 #   COMIENZO EJERCICIO 2
 
-train_data = generate_bad_collection(150)
+train_data = generate_bad_collection(100)
 p = Perceptron()
 p.train(train_data, 0.1, 500)
 
 test_data = generate_bad_collection(25)
 plot_separation_function_and_data(-p.weight[0] / p.weight[1], -p.weight[2] / p.weight[1], test_data)
 
-wf, bf = SVM(1000, test_data, current_b, current_a)
-print("wf, bf = ", wf, bf)
+#wf, bf = SVM(1000, test_data, current_b, current_a)
+#print("wf, bf = ", wf, bf)
