@@ -74,25 +74,26 @@ def test_classifier(c=1.0, kernel='linear'):
 
 
 def test_kernels():
-    kernels = ['linear', 'poly', 'rbf']
+    kernels = ['linear', 'poly', 'rbf', 'sigmoid']
 
     filename = 'kernel_results.csv'
     test_dic = {}
     train_dic = {}
     for kernel in kernels:
+        print("testing kernel= ", kernel)
         test_precision, train_precision = test_classifier(c=1.0, kernel=kernel)
         print("kernel: ", kernel, "precision test:", test_precision, "precision train:", train_precision)
-        test_dic[kernel].append(test_precision)
-        train_dic[kernel].append(train_precision)
+        # test_dic[kernel].append(test_precision)
+        # train_dic[kernel].append(train_precision)
 
     return test_dic, train_dic
 
 
 def test_c():
-
-    for c in range(20):
-        test_precision, train_precision = test_classifier(c=c*0.1+0.1)
-        print("C: ", c*0.1+0.1, "precision test:", test_precision, "precision train:", train_precision)
+    for c in range(4):
+        print("Testing c= ", c)
+        test_precision, train_precision = test_classifier(c=c*0.5+0.5)
+        print("C: ", c*0.5+0.5, "precision test:", test_precision, "precision train:", train_precision)
 
 
 def test_full_image(c_value=1.0, kernel='linear'):
@@ -100,18 +101,18 @@ def test_full_image(c_value=1.0, kernel='linear'):
     classifier = svm.SVC(C=c_value, kernel=kernel)
     classifier.fit(X_train, Y_train)
 
-    _, _, cowX, cowY = get_data([["cow.jpg", 4]])
-    original = np.asarray(Image.open("resources/cow.jpg"))
+    _, _, cowX, cowY = get_data([["arts.jpg", 4]])
+    original = np.asarray(Image.open("resources/arts.jpg"))
 
     predicted = classifier.predict(cowX)
     result_array = []
     for value in predicted:
         if value == 0:
-            result_array.append([0, 255, 0])
-        if value == 1:
-            result_array.append([255, 0, 0])
-        if value == 2:
             result_array.append([0, 0, 255])
+        if value == 1:
+            result_array.append([0, 255, 0])
+        if value == 2:
+            result_array.append([255, 0, 0])
 
     result_image = np.array(result_array).reshape(original.shape)
 
@@ -124,10 +125,11 @@ def test_full_image(c_value=1.0, kernel='linear'):
 
 test_data, train_data, arrayX, arrayY = get_data([["cielo.jpg", 0], ["pasto.jpg", 1], ["vaca.jpg", 2]])
 
-X_train, X_test, Y_train, Y_test = train_test_split(arrayX, arrayY, test_size=0.2, random_state=0)
+X_train, X_test, Y_train, Y_test = train_test_split(arrayX, arrayY, test_size=0.9, random_state=0)
 
-test_c()
-test_kernels()
+# test_c()
+#
+# test_kernels()
 
 test_full_image()
 

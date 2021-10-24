@@ -5,6 +5,7 @@ import random
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+from sklearn import svm
 
 from utilities.Node import Node
 from utilities.Perceptron import Perceptron
@@ -14,8 +15,8 @@ def generate_lineal_collection(class_qty):
     data = {"x": [], "y": [], "class_type": []}
 
     for i in range(class_qty):
-        x_val = random.uniform(0.0, 1.0)
-        y_val = random.uniform(0.0, 1.0)
+        x_val = random.uniform(0.0, 0.8)
+        y_val = random.uniform(0.0, 0.8)
         data["x"].append(x_val)
         data["y"].append(y_val)
         class_type = -1 if y_val >= x_val else 1
@@ -173,6 +174,34 @@ def SVM(cota, df, b, w):
         i += 1
     return wf, bf
 
+
+def plot_svc_decision_function(model, ax=None, plot_support=True):
+    """Plot the decision function for a 2D SVC"""
+    if ax is None:
+        ax = plt.gca()
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+
+    # create grid to evaluate model
+    x = np.linspace(xlim[0], xlim[1], 30)
+    y = np.linspace(ylim[0], ylim[1], 30)
+    Y, X = np.meshgrid(y, x)
+    xy = np.vstack([X.ravel(), Y.ravel()]).T
+    P = model.decision_function(xy).reshape(X.shape)
+
+    # plot decision boundary and margins
+    ax.contour(X, Y, P, colors='k',
+               levels=[-1, 0, 1], alpha=0.5,
+               linestyles=['--', '-', '--'])
+
+    # plot support vectors
+    if plot_support:
+        ax.scatter(model.support_vectors_[:, 0],
+                   model.support_vectors_[:, 1],
+                   s=300, linewidth=1, facecolors='none');
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+
 #   COMIENZO EJERCICIO 1
 
 # Hacemos el conjunto de entrenamiento, creamos y entrenamos el perceptron
@@ -234,3 +263,71 @@ plot_separation_function_and_data(-p.weight[0] / p.weight[1], -p.weight[2] / p.w
 
 wf, bf = SVM(1000, test_data, current_b, current_a)
 print("wf, bf = ", wf, bf)
+
+#ejecricio B
+
+train_data = generate_lineal_collection(50)
+train_data = generate_bad_collection(50)
+# classifier = svm.SVC(C=1, kernel='linear')
+# train_data_x = train_data[['x', 'y']]
+# train_data_y = train_data[['class_type']]
+# clf = classifier.fit(train_data_x, train_data_y)
+# pred = classifier.predict(train_data_x[['x', 'y']])
+# ax = plt.gca()
+#
+# colors = itertools.cycle(["r", "b", "g", "y"])
+# class_one_df = train_data[train_data["class_type"] == 1]
+# class_two_df = train_data[train_data["class_type"] == -1]
+# ax.scatter(class_one_df["x"], class_one_df["y"], zorder=10, color=next(colors))
+# ax.scatter(class_two_df["x"], class_two_df["y"], zorder=10, color=next(colors))
+#
+# xlim = ax.get_xlim()
+# ylim = ax.get_ylim()
+# xx = np.linspace(xlim[0], xlim[1], 30)
+# yy = np.linspace(ylim[0], ylim[1], 30)
+# YY, XX = np.meshgrid(yy, xx)
+# xy = np.vstack([XX.ravel(), YY.ravel()]).T
+# Z = classifier.decision_function(xy).reshape(XX.shape)
+#
+# # plot decision boundary and margins
+# ax.contour(XX, YY, Z, colors='k', levels=[-1, 0, 1], alpha=0.5,
+#         linestyles=['--', '-', '--'])
+# # plot support vectors
+# ax.scatter(classifier.support_vectors_[:, 0], classifier.support_vectors_[:, 1], s=100,
+#         linewidth=1, facecolors='none', edgecolors='k')
+# plt.show()
+
+svc = svm.SVC(kernel='linear', C=1E10)
+train_data_x = train_data[['x', 'y']]
+train_data_y = train_data[['class_type']]
+svc.fit(train_data_x, train_data_y.values.ravel())
+# x = np.linspace(0, 1, 10)
+# w = svc.coef_[0]
+# y_svm = x * (-w[0]/w[1]) - (svc.intercept_[0]/w[1])
+# margin = 1 / np.sqrt(np.sum(svc.coef_ ** 2))
+# yy_down = y_svm - np.sqrt(1 + x ** 2) * margin
+# yy_up = y_svm + np.sqrt(1 + x ** 2) * margin
+# plt.plot(x, y_svm, 'k-')
+# # plt.plot(x, yy_down, 'k--')
+# # plt.plot(x, yy_up, 'k--')
+ax = plt.gca()
+# ax.scatter(svc.support_vectors_[:, 0],
+#                    svc.support_vectors_[:, 1],
+#                    s=300, linewidth=1, facecolors='none');
+colors = itertools.cycle(["r", "b", "g", "y"])
+class_one_df = train_data[train_data["class_type"] == 1]
+class_two_df = train_data[train_data["class_type"] == -1]
+ax.scatter(class_one_df["x"], class_one_df["y"], zorder=10, color=next(colors))
+ax.scatter(class_two_df["x"], class_two_df["y"], zorder=10, color=next(colors))
+plot_svc_decision_function(svc)
+
+# plt.plot(x, y_svm)
+
+# plt.plot(x, x*best_line['m'] + best_line['b'], '--', color='orange')
+# plt.plot(x, -x * p.weights[0]/p.weights[1] - p.bias/p.weights[1], '--', color='green')
+plt.legend(['SVM'])
+
+# best_margin = [min(distances_to_line(class1[:, :2],-w[0]/w[1], -svc.intercept_[0]/w[1])),
+#               min(distances_to_line(class2[:, :2],-w[0]/w[1], -svc.intercept_[0]/w[1]))]
+# print(best_margin)
+plt.show()
